@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuestionario Interactivo: Arquitectura 5G Standalone (NR SA)</title>
+  <style>
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --border-color: #30363d;
+      --text-main: #c9d1d9;
+      --text-heading: #58a6ff;
+      --accent: #238636;
+      --accent-hover: #2ea043;
+      --correct-bg: rgba(46, 160, 67, 0.2);
+      --correct-border: #3fb950;
+      --incorrect-bg: rgba(248, 81, 73, 0.2);
+      --incorrect-border: #f85149;
+      --radio-hover: #21262d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 24px 16px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    h1 {
+      color: var(--text-heading);
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      color: #8b949e;
+      font-size: 1rem;
+    }
+
+    /* Formulario de Registro de Usuario */
+    .user-info-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .user-info-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f0f6fc;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .user-inputs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-field label {
+      font-size: 0.9rem;
+      color: #8b949e;
+      font-weight: 500;
+    }
+
+    .input-field input {
+      background-color: #0d1117;
+      border: 1px solid var(--border-color);
+      color: #f0f6fc;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .input-field input:focus {
+      border-color: #58a6ff;
+    }
+
+    .input-field input.error {
+      border-color: #f85149;
+    }
+
+    .question-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+      transition: border-color 0.2s ease;
+    }
+
+    .question-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f0f6fc;
+      margin-bottom: 16px;
+    }
+
+    .options-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: #0d1117;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .option-label:hover {
+      background-color: var(--radio-hover);
+      border-color: #8b949e;
+    }
+
+    .option-label input[type="radio"] {
+      margin-top: 4px;
+      accent-color: #58a6ff;
+      cursor: pointer;
+    }
+
+    .feedback-box {
+      display: none;
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .feedback-box.correct {
+      display: block;
+      background-color: var(--correct-bg);
+      border: 1px solid var(--correct-border);
+      color: #56d364;
+    }
+
+    .feedback-box.incorrect {
+      display: block;
+      background-color: var(--incorrect-bg);
+      border: 1px solid var(--incorrect-border);
+      color: #ff7b72;
+    }
+
+    .feedback-explanation {
+      margin-top: 6px;
+      font-size: 0.88rem;
+      color: #c9d1d9;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+      gap: 16px;
+    }
+
+    button.btn {
+      padding: 12px 28px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button.btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+    }
+
+    button.btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+
+    button.btn-primary:disabled {
+      background-color: #21262d;
+      color: #484f58;
+      cursor: not-allowed;
+    }
+
+    button.btn-secondary {
+      background-color: #21262d;
+      color: #c9d1d9;
+      border: 1px solid var(--border-color);
+    }
+
+    button.btn-secondary:hover {
+      background-color: #30363d;
+    }
+
+    #result-banner {
+      display: none;
+      background-color: var(--card-bg);
+      border: 2px solid var(--text-heading);
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .score-badge {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #58a6ff;
+      margin: 10px 0;
+    }
+
+    .summary-text {
+      font-size: 1.1rem;
+      color: #e6edf3;
+      margin-bottom: 12px;
+    }
+
+    .email-status {
+      font-size: 0.95rem;
+      padding: 10px 14px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .email-status.sending {
+      background-color: rgba(56, 139, 253, 0.15);
+      border: 1px solid #388bfd;
+      color: #58a6ff;
+    }
+
+    .email-status.success {
+      background-color: var(--correct-bg);
+      border: 1px solid var(--correct-border);
+      color: #56d364;
+    }
+
+    .email-status.fallback {
+      background-color: rgba(210, 153, 34, 0.15);
+      border: 1px solid #d29922;
+      color: #e3b341;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Cuestionario: Arquitectura 5G Standalone (NR SA)</h1>
+    <p class="subtitle">Evaluación interactiva intermedio-avanzada con registro y envío al tutor</p>
+  </header>
+
+  <!-- Datos del Estudiante -->
+  <div class="user-info-card">
+    <div class="user-info-title">
+      <span>👤 Datos del Estudiante</span>
+    </div>
+    <div class="user-inputs-grid">
+      <div class="input-field">
+        <label for="student-name">Nombre Completo *</label>
+        <input type="text" id="student-name" placeholder="Ej. Juan Pérez González" required>
+      </div>
+      <div class="input-field">
+        <label for="student-email">Correo Electrónico *</label>
+        <input type="email" id="student-email" placeholder="Ej. alumno@correo.com" required>
+      </div>
+    </div>
+  </div>
+
+  <div id="result-banner">
+    <h2>Resultado de la Evaluación</h2>
+    <div class="score-badge" id="score-display">0 / 10</div>
+    <p class="summary-text" id="feedback-summary"></p>
+    <div id="email-status-box"></div>
+  </div>
+
+  <form id="quiz-form">
+    <div id="quiz-container"></div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary" id="btn-submit" onclick="evaluarCuestionario()">Enviar y Evaluar Respuestas</button>
+      <button type="button" class="btn btn-secondary" onclick="reiniciarCuestionario()">Reiniciar</button>
+    </div>
+  </form>
+</div>
+
+<script>
+const TUTOR_EMAIL = "tutor.cpfia12@infotec.mx";
+
+const preguntas = [
+  {
+    id: 1,
+    pregunta: "1. En la arquitectura 5G SA, ¿cuál es el propósito fundamental de la interfaz N1 entre el UE y el AMF?",
+    opciones: [
+      { text: "Transportar los paquetes de datos de usuario (User Plane) cifrados hacia la nube.", correct: false },
+      { text: "Señalización de estrato sin acceso (NAS) para gestión de movilidad y autenticación de extremo a extremo, siendo transparente para la RAN.", correct: true },
+      { text: "Coordinar los traspasos (handovers) directos entre estaciones base gNB contiguas.", correct: false },
+      { text: "Asignar dinámicamente el direccionamiento IP y túneles GTP-U al dispositivo móvil.", correct: false }
+    ],
+    explicacion: "La interfaz N1 maneja la señalización NAS (Non-Access Stratum) directa y cifrada entre el UE y el AMF. La gNB simplemente transporta este mensaje encapsulado sin poder inspeccionarlo ni modificarlo."
+  },
+  {
+    id: 2,
+    pregunta: "2. Durante el desplazamiento rápido de un usuario en un tren entre dos celdas 5G, ¿qué interfaz permite la coordinación directa gNB-to-gNB sin sobrecargar al Core?",
+    opciones: [
+      { text: "Interfaz NG-C", correct: false },
+      { text: "Interfaz N4", correct: false },
+      { text: "Interfaz Xn", correct: true },
+      { text: "Interfaz NG-U", correct: false }
+    ],
+    explicacion: "La interfaz Xn interconecta directamente estaciones base gNodeB para ejecutar handover rápido y transferir el contexto del UE sin involucrar al Core para cada decisión de radio."
+  },
+  {
+    id: 3,
+    pregunta: "3. ¿Qué función del 5G Core es la responsable directa del anclaje de movilidad en el plano de usuario y de la aplicación de reglas de tráfico (Packet Detection Rules / Forwarding)?",
+    opciones: [
+      { text: "AMF (Access and Mobility Management Function)", correct: false },
+      { text: "SMF (Session Management Function)", correct: false },
+      { text: "UPF (User Plane Function)", correct: true },
+      { text: "UDM (Unified Data Management)", correct: false }
+    ],
+    explicacion: "La UPF es la única función del plano de usuario en el Core: actúa como ancla de movilidad PDU, enruta paquetes y aplica filtrado/QoS programado por el SMF."
+  },
+  {
+    id: 4,
+    pregunta: "4. ¿Cuál es la función del 5G Core encargada de la asignación de direcciones IP al UE y del establecimiento/modificación de sesiones PDU?",
+    opciones: [
+      { text: "SMF (Session Management Function)", correct: true },
+      { text: "AMF (Access and Mobility Management Function)", correct: false },
+      { text: "PCF (Policy Control Function)", correct: false },
+      { text: "CHF (Charging Function)", correct: false }
+    ],
+    explicacion: "El SMF tiene a su cargo el control de la sesión PDU, la selección del UPF idóneo y la asignación de direcciones IP para la conectividad de datos."
+  },
+  {
+    id: 5,
+    pregunta: "5. ¿Qué interfaz estándar conecta el plano de control (SMF) con el plano de usuario (UPF) mediante el protocolo PFCP (Packet Forwarding Control Protocol)?",
+    opciones: [
+      { text: "Interfaz N1", correct: false },
+      { text: "Interfaz N2 (NG-C)", correct: false },
+      { text: "Interfaz N3 (NG-U)", correct: false },
+      { text: "Interfaz N4", correct: true }
+    ],
+    explicacion: "La interfaz N4 comunica el SMF con la UPF, permitiendo la arquitectura CUPS (Control and User Plane Separation) bajo el protocolo estandarizado PFCP."
+  },
+  {
+    id: 6,
+    pregunta: "6. Para proteger la identidad permanente del suscriptor contra ataques de falsas torres (IMSI Catchers), ¿cómo se transmite el identificador en 5G SA sobre la interfaz radio?",
+    opciones: [
+      { text: "Se transmite el SUPI en texto claro únicamente en el primer encendido.", correct: false },
+      { text: "Se cifra el SUPI utilizando la clave pública de la operadora para generar el SUCI (Subscription Concealed Identifier).", correct: true },
+      { text: "Se reemplaza el SUPI por una dirección IPv6 temporal generada por el gNB.", correct: false },
+      { text: "Se envía directamente al CHF mediante un túnel SSH.", correct: false }
+    ],
+    explicacion: "En 5G SA, el identificador permanente (SUPI) nunca viaja en claro por aire; el chip SIM utiliza criptografía asimétrica para calcular el SUCI (Subscription Concealed Identifier)."
+  },
+  {
+    id: 7,
+    pregunta: "7. ¿Qué función del 5G Core contiene los perfiles de suscripción de los usuarios, credenciales de autenticación y datos de autorización (equivalente al HSS de 4G)?",
+    opciones: [
+      { text: "UDM (Unified Data Management)", correct: true },
+      { text: "PCF (Policy Control Function)", correct: false },
+      { text: "UPF (User Plane Function)", correct: false },
+      { text: "AMF (Access and Mobility Management Function)", correct: false }
+    ],
+    explicacion: "El UDM almacena las credenciales de suscripción, datos de acceso y perfiles de usuario, interactuando con el UDR para recuperar la información del cliente."
+  },
+  {
+    id: 8,
+    pregunta: "8. Cuando un usuario excede la cuota de datos contratada y la red reduce su ancho de banda a 256 kbps, ¿qué función dicta e impone las políticas de QoS?",
+    opciones: [
+      { text: "AMF", correct: false },
+      { text: "PCF (Policy Control Function)", correct: true },
+      { text: "gNodeB directamente", correct: false },
+      { text: "NR Uu", correct: false }
+    ],
+    explicacion: "El PCF es el marco de decisiones de políticas: determina las reglas de tarificación, prioridades de QoS y límites de velocidad autorizados para el usuario."
+  },
+  {
+    id: 9,
+    pregunta: "9. ¿Cuál es la diferencia principal entre las interfaces NG-C y NG-U entre la estación base (gNodeB) y el núcleo (5GC)?",
+    opciones: [
+      { text: "NG-C va hacia el UPF (datos) y NG-U va hacia el AMF (control).", correct: false },
+      { text: "NG-C transporta señalización de control hacia el AMF, mientras que NG-U transporta el tráfico de datos de usuario hacia el UPF.", correct: true },
+      { text: "Ambas interfaces transportan tráfico de usuario, pero NG-C solo funciona con fibra óptica.", correct: false },
+      { text: "NG-C es exclusiva para dispositivos IoT y NG-U para teléfonos móviles.", correct: false }
+    ],
+    explicacion: "NG-C (N2) es la interfaz del plano de control que une la gNB con el AMF; NG-U (N3) es la interfaz del plano de usuario que transporta los túneles de datos GTP-U hacia el UPF."
+  },
+  {
+    id: 10,
+    pregunta: "10. ¿Qué entidad se encarga de monitorear el consumo de datos en tiempo real (prepago/pospago) para autorizar cuotas de conexión al SMF?",
+    opciones: [
+      { text: "CHF (Charging Function)", correct: true },
+      { text: "UDM", correct: false },
+      { text: "gNB", correct: false },
+      { text: "AMF", correct: false }
+    ],
+    explicacion: "El CHF (Charging Function) supervisa la tarificación y los saldos en tiempo real, interactuando con el SMF para aprobar o restringir cuotas de paquetes de datos."
+  }
+];
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+
+  preguntas.forEach((q) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${q.id}`;
+
+    let optionsHTML = '';
+    q.opciones.forEach((opt, optIndex) => {
+      optionsHTML += `
+        <label class="option-label" id="label-${q.id}-${optIndex}">
+          <input type="radio" name="pregunta-${q.id}" value="${optIndex}">
+          <span>${opt.text}</span>
+        </label>
+      `;
+    });
+
+    card.innerHTML = `
+      <div class="question-title">${q.pregunta}</div>
+      <div class="options-group">
+        ${optionsHTML}
+      </div>
+      <div class="feedback-box" id="feedback-${q.id}"></div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+function validarInputs() {
+  const nameInput = document.getElementById('student-name');
+  const emailInput = document.getElementById('student-email');
+  let valid = true;
+
+  if (!nameInput.value.trim()) {
+    nameInput.classList.add('error');
+    valid = false;
+  } else {
+    nameInput.classList.remove('error');
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
+    emailInput.classList.add('error');
+    valid = false;
+  } else {
+    emailInput.classList.remove('error');
+  }
+
+  return valid;
+}
+
+async function enviarResultadosAlTutor(nombre, email, aciertos, total, detalles) {
+  const statusBox = document.getElementById('email-status-box');
+  statusBox.className = 'email-status sending';
+  statusBox.innerHTML = `⏳ Enviando resultados al tutor (<em>${TUTOR_EMAIL}</em>)...`;
+
+  const payload = {
+    _subject: `[Resultado Cuestionario 5G SA] ${nombre} - ${aciertos}/${total}`,
+    destinatario_tutor: TUTOR_EMAIL,
+    estudiante_nombre: nombre,
+    estudiante_email: email,
+    calificacion_aciertos: `${aciertos} de ${total}`,
+    porcentaje: `${((aciertos / total) * 100).toFixed(1)}%`,
+    fecha_envio: new Date().toLocaleString(),
+    desglose_respuestas: detalles
+  };
+
+  try {
+    const response = await fetch(`https://formsubmit.co/ajax/${TUTOR_EMAIL}`, {
+      method: "POST",
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      statusBox.className = 'email-status success';
+      statusBox.innerHTML = `✅ <strong>Resultados notificados exitosamente:</strong> Se envió tu calificación al correo <strong>${TUTOR_EMAIL}</strong>.`;
+    } else {
+      throw new Error("Respuesta no satisfactoria");
+    }
+  } catch (error) {
+    // Fallback con botón mailto si el navegador bloquea fetch o se abre offline
+    const mailtoSubject = encodeURIComponent(`[Resultado 5G SA] ${nombre} - ${aciertos}/${total}`);
+    const mailtoBody = encodeURIComponent(
+      `Hola Tutor,
+
+Adjunto los resultados del cuestionario 5G Standalone:
+
+` +
+      `Estudiante: ${nombre}
+` +
+      `Correo: ${email}
+` +
+      `Aciertos: ${aciertos} de ${total} (${((aciertos / total) * 100).toFixed(1)}%)
+
+` +
+      `Detalles:
+${detalles}
+`
+    );
+    const mailtoLink = `mailto:${TUTOR_EMAIL}?subject=${mailtoSubject}&body=${mailtoBody}`;
+
+    statusBox.className = 'email-status fallback';
+    statusBox.innerHTML = `
+      ⚠️ <em>Aviso de conexión:</em> Para confirmar la entrega al tutor, haz clic en el siguiente enlace directo: <br><br>
+      <a href="${mailtoLink}" target="_blank" style="color: #58a6ff; font-weight: bold; text-decoration: underline;">
+        📧 Haz clic aquí para enviar el reporte a ${TUTOR_EMAIL}
+      </a>
+    `;
+  }
+}
+
+function evaluarCuestionario() {
+  if (!validarInputs()) {
+    alert("Por favor completa tu Nombre y Correo electrónico antes de enviar el cuestionario.");
+    document.getElementById('student-name').focus();
+    return;
+  }
+
+  const nombre = document.getElementById('student-name').value.trim();
+  const email = document.getElementById('student-email').value.trim();
+
+  let aciertos = 0;
+  let reporteDetallado = "";
+
+  preguntas.forEach(q => {
+    const selected = document.querySelector(`input[name="pregunta-${q.id}"]:checked`);
+    const feedbackBox = document.getElementById(`feedback-${q.id}`);
+    
+    feedbackBox.className = 'feedback-box';
+    q.opciones.forEach((_, optIndex) => {
+      const lbl = document.getElementById(`label-${q.id}-${optIndex}`);
+      lbl.style.borderColor = 'var(--border-color)';
+    });
+
+    const correctIndex = q.opciones.findIndex(o => o.correct);
+    const correctLabel = document.getElementById(`label-${q.id}-${correctIndex}`);
+
+    if (selected) {
+      const userSelectedIndex = parseInt(selected.value, 10);
+
+      if (q.opciones[userSelectedIndex].correct) {
+        aciertos++;
+        reporteDetallado += `Pregunta ${q.id}: CORRECTA (Eligió: "${q.opciones[userSelectedIndex].text}")\n`;
+        feedbackBox.classList.add('correct');
+        feedbackBox.innerHTML = `
+          <strong>🎉 ¡Excelente! Respuesta correcta.</strong>
+          <div class="feedback-explanation">${q.explicacion}</div>
+        `;
+        correctLabel.style.borderColor = 'var(--correct-border)';
+      } else {
+        reporteDetallado += `Pregunta ${q.id}: INCORRECTA (Eligió: "${q.opciones[userSelectedIndex].text}" | Correcta: "${q.opciones[correctIndex].text}")\n`;
+        feedbackBox.classList.add('incorrect');
+        const userWrongLabel = document.getElementById(`label-${q.id}-${userSelectedIndex}`);
+        userWrongLabel.style.borderColor = 'var(--incorrect-border)';
+        correctLabel.style.borderColor = 'var(--correct-border)';
+
+        feedbackBox.innerHTML = `
+          <strong>❌ Respuesta incorrecta.</strong><br>
+          <em>Opción correcta:</em> <strong>${q.opciones[correctIndex].text}</strong>
+          <div class="feedback-explanation"><strong>Explicación técnica:</strong> ${q.explicacion}</div>
+        `;
+      }
+    } else {
+      reporteDetallado += `Pregunta ${q.id}: NO RESPONDIDA | Correcta: "${q.opciones[correctIndex].text}"\n`;
+      feedbackBox.classList.add('incorrect');
+      correctLabel.style.borderColor = 'var(--correct-border)';
+      feedbackBox.innerHTML = `
+        <strong>⚠️ Pregunta no respondida.</strong><br>
+        <em>La respuesta correcta era:</em> <strong>${q.opciones[correctIndex].text}</strong>
+        <div class="feedback-explanation"><strong>Explicación técnica:</strong> ${q.explicacion}</div>
+      `;
+    }
+  });
+
+  const banner = document.getElementById('result-banner');
+  const scoreDisplay = document.getElementById('score-display');
+  const feedbackSummary = document.getElementById('feedback-summary');
+
+  banner.style.display = 'block';
+  scoreDisplay.textContent = `${aciertos} / ${preguntas.length}`;
+
+  const porcentaje = (aciertos / preguntas.length) * 100;
+  if (porcentaje >= 90) {
+    feedbackSummary.innerHTML = `🌟 <strong>¡Desempeño Excepcional (${porcentaje}%), ${nombre}!</strong> Dominas con soltura los conceptos avanzados de 5G Standalone.`;
+  } else if (porcentaje >= 70) {
+    feedbackSummary.innerHTML = `👏 <strong>¡Muy Buen Trabajo (${porcentaje}%), ${nombre}!</strong> Tienes bases sólidas sobre 5G SA.`;
+  } else if (porcentaje >= 50) {
+    feedbackSummary.innerHTML = `📚 <strong>Puntaje Regular (${porcentaje}%), ${nombre}.</strong> Buen esfuerzo, repasa la separación de planos e interfaces clave.`;
+  } else {
+    feedbackSummary.innerHTML = `💡 <strong>Puntaje Bajo (${porcentaje}%), ${nombre}.</strong> Revisa nuevamente los diagramas y componentes del Core 5G.`;
+  }
+
+  banner.scrollIntoView({ behavior: 'smooth' });
+
+  // Disparar envío automático al tutor
+  enviarResultadosAlTutor(nombre, email, aciertos, preguntas.length, reporteDetallado);
+}
+
+function reiniciarCuestionario() {
+  document.getElementById('quiz-form').reset();
+  const feedbacks = document.querySelectorAll('.feedback-box');
+  feedbacks.forEach(f => {
+    f.className = 'feedback-box';
+    f.innerHTML = '';
+  });
+
+  const labels = document.querySelectorAll('.option-label');
+  labels.forEach(l => {
+    l.style.borderColor = 'var(--border-color)';
+  });
+
+  document.getElementById('result-banner').style.display = 'none';
+  document.getElementById('email-status-box').innerHTML = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.addEventListener('DOMContentLoaded', renderQuiz);
+</script>
+
+</body>
+</html>
